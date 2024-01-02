@@ -24,9 +24,9 @@ class SpellChecker:
 
 
 def parse_arguments():
-    parser = argparse.ArgumentParser(description="Search and retrieve book texts.")
+    parser = argparse.ArgumentParser(description="Search and retrieve Jewish texts.")
     parser.add_argument(
-    "-s", "--search", type=str, nargs='+', help="Enable book search"
+    "-s", "--search", type=str, nargs='+', help="search for the correct spelling of the book"
 )
     parser.add_argument("-b", "--book", type=str, nargs='+', help="Enter book name in English")
     parser.add_argument(
@@ -34,7 +34,7 @@ def parse_arguments():
         "--language",
         type=str,
         choices=["en", "he"],
-        help="Choose language of the book text",
+        help="Choose language of the text",
     )
     return parser.parse_args()
 
@@ -93,13 +93,12 @@ def find_book(search):
         None
     """
     searched = " ".join(search)
-    response = requests.get("https://www.sefaria.org/api/index/titles")
-    all_titles = json.loads(response.text)
-    wordlist = all_titles["books"]
-    spell_checker = SpellChecker(wordlist)
-    similar_word = spell_checker.find_similar_word(searched)
-    print(f"did you mean one of these? {similar_word} ")
-
+    response = requests.get("https://www.sefaria.org/api/name/" + searched)
+    loaded_json = json.loads(response.text)
+    if loaded_json['is_ref'] == True:
+        print("It seems like you have the correct spelling")
+    else:
+        print(loaded_json['completions'])
 
 if __name__ == "__main__":
     main()
