@@ -1,3 +1,28 @@
+# Learn
+
+This program is designed to search and retrieve Jewish texts from the Sefaria database. Users can specify the book name, search for the correct spelling of the book, choose the language of the text (English or Hebrew), and interact with the program in an interactive mode.
+
+## Installation
+
+```
+git clone https://github.com/luvchurchill/learn.git
+```
+```
+cd learn
+```
+```
+python3 pip -m venv venv
+```
+```
+source venv/bin/activate
+```
+```
+pip install -r requirements.txt
+```
+
+
+## Usage
+
 ```
 usage: app.py [-h] [-s SEARCH [SEARCH ...]] [-b BOOK [BOOK ...]] [-l {en,he}]
               [-i]
@@ -14,3 +39,9 @@ options:
                         Choose language of the text
   -i, --interactive     Use the program interactively
   ```
+
+------
+### Credits
+
+- [Sefaria](https://www.sefaria.org/)
+- [Codeium](https://codeium.com/) 
