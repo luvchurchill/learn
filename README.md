@@ -1,5 +1,6 @@
 ```
 usage: app.py [-h] [-s SEARCH [SEARCH ...]] [-b BOOK [BOOK ...]] [-l {en,he}]
+              [-i]
 
 Search and retrieve Jewish texts.
 
@@ -11,4 +12,5 @@ options:
                         Enter book name in English
   -l {en,he}, --language {en,he}
                         Choose language of the text
-```
+  -i, --interactive     Use the program interactively
+  ```
