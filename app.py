@@ -1,8 +1,16 @@
 from bs4 import BeautifulSoup as bs
+import difflib
 from hebrew import Hebrew
 import json
 import requests
-import spellchecker 
+from spellchecker import SpellChecker
+
+class SpellChecker:
+    def __init__(self, wordlist):
+        self.wordlist = wordlist
+
+    def find_similar_word(self, word):
+        return difflib.get_close_matches(word, self.wordlist, n=3)
 
 
 def main():
@@ -39,19 +47,10 @@ def find_text():
     all_titles = json.loads(response.text)
     search = input("what book are you looking for? ")
 
-    # Create a SpellChecker instance
-    spell = spellchecker.Spellchecker()
-
-    # Load the words into the spell checker
-    spell.word_frequency.load_words(all_titles)
-
-    # Perform spell checking
-    misspelled = spell.unknown(search)
-
-    # Get the corrected version of misspelled words
-    corrected = [spell.correction(word) for word in misspelled]
-
-    print(f"are you looking for {corrected}?") 
+    wordlist = all_titles['books']
+    checker = SpellChecker(wordlist)
+    similar_word = checker.find_similar_word(search)
+    print(f"did you mean one of these? {similar_word} ")  
 
 
 main()
