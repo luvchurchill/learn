@@ -93,13 +93,17 @@ def find_book(search):
     Returns:
         None
     """
-    searched = " ".join(search)
+    if type(search) == list:
+        searched = " ".join(search)
+    else:
+        searched = search
     response = requests.get("https://www.sefaria.org/api/name/" + searched)
     loaded_json = json.loads(response.text)
     if loaded_json["is_ref"] == True:
         print("It seems like you have the correct spelling")
     else:
-        print(loaded_json["completions"])
+        for completion in loaded_json["completions"]:
+            print(completion)
 
 
 def interactive_mode():
@@ -108,17 +112,18 @@ def interactive_mode():
     print(pyfiglet.figlet_format(name))
     print(pyfiglet.figlet_format(tagline, font="univers"))
     print("Do you know the correct spelling of the book? (y/n)")
-    needs_search = input(">>> ")
-    if needs_search == "n":
+    knows_spelling = input(">>> ")
+    if knows_spelling not in ["y", "n"]:
+        print("Invalid input. Please enter 'y' or 'n'.")
+    elif knows_spelling == "n":
         help_searching()
-    elif needs_search == "y":
-        print("Enter the name of the book: ")
-        book = input(">>> ")
-        print(
-            "Enter the language you want to read in ('en' for English, 'he' for Hebrew): "
-        )
-        language = input(">>> ")
-        retrieve_text(book, language)
+    print("Enter the name of the book: ")
+    book = input(">>> ")
+    print(
+        "Enter the language you want to read in ('en' for English, 'he' for Hebrew): "
+    )
+    language = input(">>> ")
+    retrieve_text(book, language)
 
 
 def help_searching():
