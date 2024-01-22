@@ -26,6 +26,9 @@ def parse_arguments():
         help="Choose language of the text",
     )
     parser.add_argument(
+        "-r", "--random", action="store_true", help="Retrieve a random text"
+    )
+    parser.add_argument(
         "-i", "--interactive", action="store_true", help="Use the program interactively"
     )
     return parser.parse_args()
@@ -40,11 +43,13 @@ def main():
         find_book(args.search)
     elif args.book and args.language:
         retrieve_text(args.book, args.language)
+    elif args.random:
+        retrieve_text("random", "he", random=True)
     else:
         print("Invalid arguments. Use -h or --help for more information.")
 
 
-def retrieve_text(book, language):
+def retrieve_text(book, language, random=False):
     """
     Retrieves text from a book using the Sefaria API.
 
@@ -52,6 +57,8 @@ def retrieve_text(book, language):
     :type book: str
     :param language: The language of the text to retrieve ("en" for English, "he" for Hebrew).
     :type language: str
+    :param random: Whether to retrieve a random text.
+    :type random: bool
     """
     if type(book) == list:
         book_name = " ".join(book)
@@ -60,27 +67,35 @@ def retrieve_text(book, language):
     base_url = "https://www.sefaria.org/api/texts/"
     response = requests.get(base_url + book_name)
     loaded_json = json.loads(response.text)
-    try:
-        if language == "en":
-            english_sentences = []
-            for line in loaded_json["text"]:
-                english_sentences.append(bs(line, "html.parser").get_text())
-            english_paragraph = "\n".join(english_sentences)
-            print(english_paragraph)
-        elif language == "he":
-            hebrew_sentences = []
-            for line in loaded_json["he"]:
-                hebrew_sentences.append(bs(line, "html.parser").get_text())
-            hebrew_paragraph = "\n".join(hebrew_sentences)
-            clean = Hebrew(hebrew_paragraph)
-            text_only = clean.text_only()
-            print(text_only)
-        else:
-            print("Invalid language. Please use 'en' or 'he'.")
-    except KeyError:
-        print(
-            "The text was not found. use the search function to find the correct spelling"
-        )
+    if random:
+        try:
+            print(loaded_json["heRef"])
+            cleaned = bs(loaded_json["he"], "html.parser").get_text()
+            print(cleaned)
+        except Exception:
+            print(f"{Exception} \n Something went wrong, sorry.")
+    else:
+        try:
+            if language == "en":
+                english_sentences = []
+                for line in loaded_json["text"]:
+                    english_sentences.append(bs(line, "html.parser").get_text())
+                english_paragraph = "\n".join(english_sentences)
+                print(english_paragraph)
+            elif language == "he":
+                hebrew_sentences = []
+                for line in loaded_json["he"]:
+                    hebrew_sentences.append(bs(line, "html.parser").get_text())
+                hebrew_paragraph = "\n".join(hebrew_sentences)
+                clean = Hebrew(hebrew_paragraph)
+                text_only = clean.text_only()
+                print(text_only)
+            else:
+                print("Invalid language. Please use 'en' or 'he'.")
+        except KeyError:
+            print(
+                "The text was not found. use the search function to find the correct spelling"
+            )
 
 
 def find_book(search):
