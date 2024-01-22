@@ -104,6 +104,20 @@ def retrieve_text(book, language, random=False):
         else:
             print("Invalid language. Please use 'en' or 'he'.")
 
+def entire_book(book, language):
+    encoded_url = urllib.parse.quote(book, safe="")
+    base_url = "https://www.sefaria.org/api/texts/"
+    response = requests.get(base_url + encoded_url + "?pad=0")
+    loaded_json = json.loads(response.text)
+    entirety = []
+    for book in loaded_json[language]:
+        for chapter in book:
+            cleaned = bs(chapter, "html.parser").get_text()
+            hebrew = Hebrew(cleaned)
+            entirety.append(hebrew.text_only())
+    print(entirety)
+
+
 
 def find_book(search):
     """
@@ -164,4 +178,4 @@ def help_searching():
 
 
 if __name__ == "__main__":
-    main()
+    entire_book("Mishneh Torah, Sales", "text")
