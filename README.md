@@ -1,5 +1,8 @@
 # Learn
 
+<img width="231" alt="PoweredBySefaria" src="https://github.com/luvchurchill/learn/assets/46406654/74a25bc9-1650-4d08-838c-143faaf46e5f">
+
+
 This program is designed to search and retrieve Jewish texts from the Sefaria database. Users can specify the book name, search for the correct spelling of the book, choose the language of the text (English or Hebrew), and interact with the program in an interactive mode.
 
 ## Installation
