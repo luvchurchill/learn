@@ -4,6 +4,7 @@ from hebrew import Hebrew
 import json
 import pyfiglet
 import requests
+import urllib.parse
 
 
 def parse_arguments():
@@ -64,8 +65,9 @@ def retrieve_text(book, language, random=False):
         book_name = " ".join(book)
     else:
         book_name = book
+    encoded_url = urllib.parse.quote(book_name, safe="")
     base_url = "https://www.sefaria.org/api/texts/"
-    response = requests.get(base_url + book_name)
+    response = requests.get(base_url + encoded_url)
     loaded_json = json.loads(response.text)
     if random:
         try:
@@ -75,27 +77,32 @@ def retrieve_text(book, language, random=False):
         except Exception:
             print(f"{Exception} \n Something went wrong, sorry.")
     else:
-        try:
-            if language == "en":
-                english_sentences = []
+        if language == "en":
+            english_sentences = []
+            try:
                 for line in loaded_json["text"]:
                     english_sentences.append(bs(line, "html.parser").get_text())
-                english_paragraph = "\n".join(english_sentences)
-                print(english_paragraph)
-            elif language == "he":
-                hebrew_sentences = []
+            except KeyError:
+                print(
+                    "The text was not found. use the search function to find the correct spelling. Or the text might not be written in this language"
+                )
+            english_paragraph = "\n".join(english_sentences)
+            print(english_paragraph)
+        elif language == "he":
+            hebrew_sentences = []
+            try:
                 for line in loaded_json["he"]:
                     hebrew_sentences.append(bs(line, "html.parser").get_text())
-                hebrew_paragraph = "\n".join(hebrew_sentences)
-                clean = Hebrew(hebrew_paragraph)
-                text_only = clean.text_only()
-                print(text_only)
-            else:
-                print("Invalid language. Please use 'en' or 'he'.")
-        except KeyError:
-            print(
-                "The text was not found. use the search function to find the correct spelling"
-            )
+            except KeyError:
+                print(
+                    "The text was not found. use the search function to find the correct spelling. Or the text might not be written in this language"
+                )
+            hebrew_paragraph = "\n".join(hebrew_sentences)
+            clean = Hebrew(hebrew_paragraph)
+            text_only = clean.text_only()
+            print(text_only)
+        else:
+            print("Invalid language. Please use 'en' or 'he'.")
 
 
 def find_book(search):
@@ -115,7 +122,11 @@ def find_book(search):
     response = requests.get("https://www.sefaria.org/api/name/" + searched)
     loaded_json = json.loads(response.text)
     if loaded_json["is_ref"] == True:
-        print("It seems like you have the correct spelling")
+        print("-----------------------------------------")
+        print("It seems like you have the correct spelling but here are similar titles")
+        print("-----------------------------------------")
+        for completion in loaded_json["completions"]:
+            print(completion)
     else:
         for completion in loaded_json["completions"]:
             print(completion)
