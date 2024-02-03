@@ -27,6 +27,9 @@ def parse_arguments():
         help="Choose language of the text",
     )
     parser.add_argument(
+        "-a", "--all", action="store_true", help="Retrieve the entire book"
+    )
+    parser.add_argument(
         "-r", "--random", action="store_true", help="Retrieve a random text"
     )
     parser.add_argument(
@@ -42,6 +45,8 @@ def main():
         interactive_mode()
     elif args.search:
         find_book(args.search)
+    elif args.book and args.language and args.all:
+        entire_book(args.book, args.language)
     elif args.book and args.language:
         retrieve_text(args.book, args.language)
     elif args.random:
@@ -104,8 +109,15 @@ def retrieve_text(book, language, random=False):
         else:
             print("Invalid language. Please use 'en' or 'he'.")
 
+
 def entire_book(book, language):
-    encoded_url = urllib.parse.quote(book, safe="")
+    if type(book) == list:
+        book_name = " ".join(book)
+    else:
+        book_name = book
+    if language == "en":
+        language = "text"
+    encoded_url = urllib.parse.quote(book_name, safe="")
     base_url = "https://www.sefaria.org/api/texts/"
     response = requests.get(base_url + encoded_url + "?pad=0")
     loaded_json = json.loads(response.text)
@@ -118,10 +130,9 @@ def entire_book(book, language):
     print(entirety)
 
 
-
 def find_book(search):
     """
-    Searches for a book in the Sefaria Database.
+    Searches for the correct spelling of a text name in the Sefaria Database.
 
     Parameters:
         search (list): A list of words to search for.
@@ -136,9 +147,9 @@ def find_book(search):
     response = requests.get("https://www.sefaria.org/api/name/" + searched)
     loaded_json = json.loads(response.text)
     if loaded_json["is_ref"] == True:
-        print("-----------------------------------------")
+        print("-" * 20)
         print("It seems like you have the correct spelling but here are similar titles")
-        print("-----------------------------------------")
+        print("-" * 20)
         for completion in loaded_json["completions"]:
             print(completion)
     else:
@@ -178,4 +189,4 @@ def help_searching():
 
 
 if __name__ == "__main__":
-    entire_book("Mishneh Torah, Sales", "text")
+    main()
