@@ -47,12 +47,14 @@ Please note that the spelling of the book name must be correct. In order to get 
 Some books are only in English or only in Hebrew so please take that into account if it returns "no text found".
 To retrieve a specific chapter try to add numbers at the end of the book name `python3 app.py -b Ramban on Genesis 2 -l he` this *usually* works.
 
+To retrieve the entire book use `python3 app.py -b book name -l language -a` Not all books are stored as one text so this doesn't always work.
+
 You can get a random text by using `python3 app.py -r`
 
 There is also an interactive mode that you can use with `python3 app.py -i`. This might be easier to use but you lose the ability to pipe the output to any other program/file.
 
 ```
-usage: app.py [-h] [-s SEARCH [SEARCH ...]] [-b BOOK [BOOK ...]] [-l {en,he}] [-r] [-i]
+usage: app.py [-h] [-s SEARCH [SEARCH ...]] [-b BOOK [BOOK ...]] [-l {en,he}] [-a] [-r] [-i]
 
 Search and retrieve Jewish texts.
 
@@ -64,6 +66,7 @@ options:
                         Enter book name in English
   -l {en,he}, --language {en,he}
                         Choose language of the text
+  -a, --all             Retrieve the entire book
   -r, --random          Retrieve a random text
   -i, --interactive     Use the program interactively
   ```
